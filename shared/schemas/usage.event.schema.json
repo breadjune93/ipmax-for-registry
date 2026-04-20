@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ipmax.example.com/schemas/usage.event.json",
+  "title": "UsageEvent",
+  "description": "Kafka topic 'usage.events' 페이로드. Provider 라우터가 올리는 N초 주기 집계 이벤트. UsageAggregator가 소비하여 Redis 카운터·잔액·원장에 반영한다.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "endpointId", "sessionId", "windowStart", "windowEnd", "bytesIn", "bytesOut"],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "description": "UUID. 멱등 처리를 위한 식별자."
+    },
+    "endpointId": {
+      "type": "string"
+    },
+    "sessionId": {
+      "type": "string"
+    },
+    "windowStart": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "windowEnd": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "bytesIn": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "bytesOut": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "meta": {
+      "type": "object",
+      "description": "라우터 버전, 지연 등 디버그 메타",
+      "additionalProperties": true
+    }
+  }
+}

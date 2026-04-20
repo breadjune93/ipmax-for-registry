@@ -1,0 +1,79 @@
+# IPMax — Error Code Catalog
+# 모든 플랫폼이 공유하는 에러 코드 단일 정의.
+# 코드 규칙: {DOMAIN}_{DETAIL} — 예: AUTH_INVALID_CREDENTIALS
+# HTTP 상태와 1:1로 묶지 않는다 (도메인 의미 중심).
+
+version: 1
+
+errors:
+  # ===== AUTH =====
+  - code: AUTH_INVALID_CREDENTIALS
+    httpStatus: 401
+    userMessageKey: error.auth.invalidCredentials
+    description: 이메일 또는 비밀번호가 올바르지 않음
+  - code: AUTH_TOKEN_EXPIRED
+    httpStatus: 401
+    userMessageKey: error.auth.tokenExpired
+    description: 액세스 토큰 만료. 리프레시 필요.
+  - code: AUTH_MFA_REQUIRED
+    httpStatus: 401
+    userMessageKey: error.auth.mfaRequired
+    description: 관리자/민감 액션에 MFA 필요
+
+  # ===== WALLET =====
+  - code: WALLET_INSUFFICIENT_CREDIT
+    httpStatus: 402
+    userMessageKey: error.wallet.insufficientCredit
+    description: 세션 시작에 필요한 크레딧 부족
+  - code: WALLET_CHARGE_FAILED
+    httpStatus: 502
+    userMessageKey: error.wallet.chargeFailed
+    description: 결제 PG 연동 실패
+
+  # ===== ENDPOINT =====
+  - code: ENDPOINT_NOT_FOUND
+    httpStatus: 404
+    userMessageKey: error.endpoint.notFound
+    description: 존재하지 않거나 해제된 Endpoint
+  - code: ENDPOINT_OFFLINE
+    httpStatus: 409
+    userMessageKey: error.endpoint.offline
+    description: Heartbeat 누락으로 오프라인 판정
+
+  # ===== SESSION =====
+  - code: SESSION_ALREADY_ACTIVE
+    httpStatus: 409
+    userMessageKey: error.session.alreadyActive
+    description: 동일 디바이스에서 이미 활성 세션이 있음
+  - code: SESSION_TERMINATED_BY_CREDIT
+    httpStatus: 409
+    userMessageKey: error.session.terminatedByCredit
+    description: 크레딧 소진으로 세션이 종료됨
+  - code: SESSION_TUNNEL_SETUP_FAILED
+    httpStatus: 502
+    userMessageKey: error.session.tunnelSetupFailed
+    description: WireGuard 터널 수립 실패 (Provider 측 응답 이상)
+
+  # ===== PROVIDER =====
+  - code: PROVIDER_TOKEN_INVALID
+    httpStatus: 401
+    userMessageKey: error.provider.tokenInvalid
+    description: 프로비저닝/상시 토큰 검증 실패
+  - code: PROVIDER_HEARTBEAT_REJECTED
+    httpStatus: 422
+    userMessageKey: error.provider.heartbeatRejected
+    description: 페이로드 형식 또는 시계 이탈
+
+  # ===== GENERIC =====
+  - code: VALIDATION_FAILED
+    httpStatus: 400
+    userMessageKey: error.common.validationFailed
+    description: 요청 유효성 검증 실패
+  - code: RATE_LIMITED
+    httpStatus: 429
+    userMessageKey: error.common.rateLimited
+    description: 속도 제한
+  - code: INTERNAL_ERROR
+    httpStatus: 500
+    userMessageKey: error.common.internal
+    description: 예기치 못한 서버 오류 (세부는 로그에만)

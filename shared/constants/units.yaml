@@ -1,0 +1,50 @@
+# IPMax — Units & Policy Constants
+# 모든 플랫폼에서 동일 해석되어야 하는 수치/단위.
+
+version: 1
+
+credit:
+  # 크레딧은 정수(최소 단위)로만 저장/전송한다.
+  # displayScale = 화면에 보여줄 때만 사용하는 소수점 자릿수
+  minorUnitName: "micro-credit"
+  displayScale: 2
+  # 1 IPMAX = 1,000,000 micro-credit (예시)
+  majorToMinor: 1000000
+
+time:
+  # 모든 시간은 UTC, 초 단위 Long
+  timezoneStorage: UTC
+
+heartbeat:
+  # Provider → Server 리포트 주기(초)
+  intervalSec: 10
+  # 누락 허용 횟수. 초과 시 Endpoint OFFLINE 처리
+  maxConsecutiveMiss: 3
+  # 시계 스큐 허용치(초)
+  maxClockSkewSec: 30
+
+session:
+  # 세션 당 최대 유지 시간(초). 초과 시 재연결 요구.
+  maxDurationSec: 86400
+  # 잔액 소진 임박 경고 임계값 (초 단위 예상 소요)
+  lowCreditWarnSec: 120
+
+billing:
+  # 트래픽 정산 단위
+  byteUnit: "bytes"
+  megabyteBytes: 1048576      # 1 MiB (2^20) 기준
+  # 반올림 정책: 내림(사용자 유리) / 올림(서비스 유리) / 반올림
+  roundingMode: "HALF_UP"
+
+network:
+  # Consumer 앱 API 호출 기본 타임아웃/재시도
+  apiTimeoutMs: 15000
+  apiRetryMax: 3
+  apiRetryBaseBackoffMs: 500
+
+security:
+  # JWT 만료
+  accessTokenTtlSec: 900       # 15분
+  refreshTokenTtlSec: 2592000  # 30일
+  # 관리자 콘솔은 더 짧게
+  adminAccessTokenTtlSec: 300

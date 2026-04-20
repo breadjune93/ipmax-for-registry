@@ -1,0 +1,208 @@
+openapi: 3.1.0
+info:
+  title: IPMax API
+  version: 0.1.0
+  description: |
+    IPMax 서버 ↔ 클라이언트 공통 API 계약.
+    이 문서가 **진실 공급원**이며, 모든 플랫폼(Windows/Android/macOS/iOS/관리콘솔)은 이 스펙으로부터 모델·클라이언트를 생성한다.
+
+    변경 절차:
+    1. 서버에서 구현 합의
+    2. 본 스펙 업데이트 + ADR 추가(필요 시)
+    3. 각 클라이언트는 pull 후 코드 생성기 재실행
+
+servers:
+  - url: https://api.ipmax.example.com/v1
+    description: 프로덕션 (예시)
+  - url: https://api-staging.ipmax.example.com/v1
+    description: 스테이징
+
+tags:
+  - name: auth
+  - name: wallet
+  - name: endpoint
+  - name: session
+  - name: provider
+
+paths:
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: 이메일/비밀번호 로그인
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: JWT 발급
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+
+  /wallet/balance:
+    get:
+      tags: [wallet]
+      summary: 현재 크레딧 잔액
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletBalance'
+
+  /endpoints:
+    get:
+      tags: [endpoint]
+      summary: 가용 Endpoint 목록
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: region
+          schema: { type: string }
+          description: 지역 코드 (ISO 3166-1 alpha-2)
+        - in: query
+          name: feature
+          schema: { type: string, enum: [proxy_http, proxy_socks5, dpi_bypass] }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Endpoint'
+
+  /sessions:
+    post:
+      tags: [session]
+      summary: 세션 시작
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionRequest'
+      responses:
+        '201':
+          description: 세션 생성 + WireGuard 구성
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionCreated'
+
+  /sessions/{id}:
+    delete:
+      tags: [session]
+      summary: 세션 종료
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: 종료됨
+
+  /provider/heartbeat:
+    post:
+      tags: [provider]
+      summary: OpenWrt 라우터 → 서버 상태·사용량 리포트
+      security: [{ providerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HeartbeatRequest'
+      responses:
+        '202':
+          description: 수신됨
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    providerAuth:
+      type: apiKey
+      in: header
+      name: X-Provider-Token
+
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password }
+
+    AuthTokens:
+      type: object
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+        expiresInSec: { type: integer }
+
+    WalletBalance:
+      type: object
+      properties:
+        credit: { type: integer, description: 최소 단위 정수 }
+        currency: { type: string, example: IPMAX_CREDIT }
+
+    Endpoint:
+      type: object
+      properties:
+        id: { type: string }
+        region: { type: string }
+        tier: { type: string, enum: [basic, standard, premium] }
+        qualityScore: { type: number, format: float }
+        creditPerSec: { type: integer }
+        creditPerMB: { type: integer }
+        features:
+          type: array
+          items: { type: string, enum: [proxy_http, proxy_socks5, dpi_bypass] }
+
+    CreateSessionRequest:
+      type: object
+      required: [endpointId, devicePublicKey]
+      properties:
+        endpointId: { type: string }
+        devicePublicKey: { type: string, description: WireGuard 공개키 }
+
+    SessionCreated:
+      type: object
+      properties:
+        sessionId: { type: string }
+        wireguardConfig:
+          type: object
+          properties:
+            serverPublicKey: { type: string }
+            endpoint: { type: string, description: "host:port" }
+            allowedIps: { type: string }
+            assignedIp: { type: string }
+            dns: { type: array, items: { type: string } }
+
+    HeartbeatRequest:
+      type: object
+      properties:
+        endpointId: { type: string }
+        windowStart: { type: string, format: date-time }
+        windowEnd: { type: string, format: date-time }
+        sessions:
+          type: array
+          items:
+            type: object
+            properties:
+              sessionId: { type: string }
+              bytesIn: { type: integer, format: int64 }
+              bytesOut: { type: integer, format: int64 }

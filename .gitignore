@@ -1,0 +1,106 @@
+# ===== 공통 =====
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+*.p12
+*.keystore
+*.jks
+
+# ===== JetBrains / VS Code =====
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# ===== Java / Spring Boot =====
+target/
+build/
+out/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.war
+*.ear
+.gradle/
+HELP.md
+application-local.yml
+application-local.properties
+
+# ===== Node / Gradle Cache =====
+node_modules/
+npm-debug.log*
+
+# ===== Android =====
+/apps/android/.gradle
+/apps/android/local.properties
+/apps/android/build/
+/apps/android/app/build/
+/apps/android/captures/
+/apps/android/.externalNativeBuild/
+/apps/android/.cxx/
+*.apk
+*.aab
+
+# ===== Windows / WPF / .NET =====
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userprefs
+*.userosscache
+*.sln.docstates
+.vs/
+packages/
+*.nupkg
+
+# ===== Xcode (macOS / iOS / SwiftUI) =====
+DerivedData/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+xcuserdata/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+Pods/
+Carthage/Build/
+.swiftpm/
+
+# ===== Python (스크립트/도구가 혹시 있다면) =====
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ===== 운영/배포 =====
+docker-compose.override.yml
+kubeconfig
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# ===== ELK / 로그 =====
+logs/
+*.ndjson.gz
+
+# ===== 기타 =====
+coverage/
+.nyc_output/
+.cache/
+tmp/

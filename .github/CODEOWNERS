@@ -1,0 +1,22 @@
+# CODEOWNERS — 폴더별 리뷰 담당자 지정
+# 사용법: @your-github-username 또는 @your-org/team-name 으로 교체
+# GitHub 조직 팀을 쓰면 유지보수 편함.
+
+# 루트/공통 문서는 관리자 팀 전체
+*                                @YOUR_ORG/admins
+
+# 사업·아키텍처 문서는 별도 리뷰 팀
+/docs/business/                  @YOUR_ORG/product-owners
+/docs/architecture/              @YOUR_ORG/architects
+/docs/api-contracts/             @YOUR_ORG/architects @YOUR_ORG/backend
+
+# 플랫폼별
+/server/                         @YOUR_ORG/backend
+/router/openwrt/                 @YOUR_ORG/network
+/apps/windows/                   @YOUR_ORG/windows
+/apps/android/                   @YOUR_ORG/android
+/apps/macos/                     @YOUR_ORG/apple
+/apps/ios/                       @YOUR_ORG/apple
+
+# 공통 모델/상수 변경은 전 팀 알림 의미가 있으므로 admins + architects
+/shared/                         @YOUR_ORG/architects @YOUR_ORG/admins
